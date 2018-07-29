@@ -1,0 +1,7 @@
+[package]
+name = "lined"
+version = "0.1.0"
+authors = ["Tord <tord.svensson@gmail.com>"]
+
+[dependencies]
+clap = "2.32"

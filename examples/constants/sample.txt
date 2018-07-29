@@ -1,0 +1,6 @@
+    Back,
+    Forward,
+    ForwardWord,
+    BackWord,
+    Home,
+    End,
