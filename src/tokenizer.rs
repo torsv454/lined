@@ -53,7 +53,6 @@ impl<'a> Tokenizer<'a> {
         let mut escape = false;
         while let Some(c) = self.chars.next() {
             self.col += 1;
-            // println!("c = {}, escape = {}", c, escape);
             match c {
                 '"' if !escape => break,
                 '"' => {
@@ -66,8 +65,7 @@ impl<'a> Tokenizer<'a> {
                     self.buf.push(c)
                 }
                 '\n' => {
-                    self.line += 1;
-                    self.col = 0;
+                    self.nextline();
                     self.buf.push(c);
                 }
                 _ => self.buf.push(c),
@@ -75,6 +73,11 @@ impl<'a> Tokenizer<'a> {
         }
         let result: String = self.buf.drain(..).collect();
         Token::STRING(self.info(), result)
+    }
+
+    fn nextline(&mut self) {
+        self.line += 1;
+        self.col = 0;
     }
 }
 
@@ -92,7 +95,8 @@ impl<'a> Iterator for Tokenizer<'a> {
                 '}' => return  { let info = self.info(); Some(self.word_or_token(Token::RBRACE(info), '}'))},
                 '"' => // assert empty buffer 
                     return Some(self.quoted_string()),
-                ' ' | '\t' | '\n' | '\r' => {self.line += 1; self.col = 0; if !self.buf.is_empty() { return Some(self.word()); }},
+                '\n'  => {if !self.buf.is_empty() { let token = Some(self.word());self.nextline();return token;} else {self.nextline();}},
+                ' ' | '\t' | '\r' => if !self.buf.is_empty() { return Some(self.word()); },
                 _ => self.buf.push(c),
             }
         }
@@ -119,5 +123,47 @@ impl<'a, I: Iterator<Item = char>> TokenizerTrait<'a, I> for I {
             line: 1,
             col: 0,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::Token::*;
+    use super::*;
+
+    fn word(s: &str, line: usize, column: usize) -> Option<Token> {
+        Some(WORD(TokenInfo { line, column }, s.to_owned()))
+    }
+
+    fn num(s: i32, line: usize, column: usize) -> Option<Token> {
+        Some(NUM(TokenInfo { line, column }, s))
+    }
+
+    fn string(s: &str, line: usize, column: usize) -> Option<Token> {
+        Some(STRING(TokenInfo { line, column }, s.to_owned()))
+    }
+
+    #[test]
+    fn tokenizer_stream() {
+        let input = r#"trim_line
+truncate_by 12
+insert "const KW_"
+"#;
+
+        let mut chars = input.chars();
+        let mut tokens = chars.tokens();
+
+        assert_eq!(word("trim_line", 1, 10), tokens.next());
+
+        assert_eq!(word("truncate_by", 2, 12), tokens.next());
+
+        assert_eq!(num(12, 2, 15), tokens.next());
+
+        assert_eq!(word("insert", 3, 7), tokens.next());
+
+        assert_eq!(string("const KW_", 3, 18), tokens.next());
+
+        assert_eq!(None, tokens.next());
     }
 }
