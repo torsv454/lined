@@ -48,7 +48,6 @@ const KW_LTRIM_LINE: &str = "ltrim_line";
 const KW_RTRIM_LINE: &str = "rtrim_line";
 const KW_TRIM_LINE: &str = "trim_line";
 
-
 #[derive(Debug, PartialEq)]
 enum ParseError {
     ExpectedString,
@@ -58,7 +57,7 @@ enum ParseError {
 }
 
 fn expect_string(tokenizer: &mut Tokenizer) -> Result<String, ParseError> {
-    if let Some(Token::STRING(text)) = tokenizer.next() {
+    if let Some(Token::STRING(info, text)) = tokenizer.next() {
         Ok(text)
     } else {
         Err(ParseError::ExpectedString)
@@ -66,7 +65,7 @@ fn expect_string(tokenizer: &mut Tokenizer) -> Result<String, ParseError> {
 }
 
 fn expect_number(tokenizer: &mut Tokenizer) -> Result<i32, ParseError> {
-    if let Some(Token::NUM(num)) = tokenizer.next() {
+    if let Some(Token::NUM(info, num)) = tokenizer.next() {
         Ok(num)
     } else {
         Err(ParseError::ExpectedNumber)
@@ -76,7 +75,7 @@ fn expect_number(tokenizer: &mut Tokenizer) -> Result<i32, ParseError> {
 fn parse_cmd(tokenizer: &mut Tokenizer) -> Result<Option<Cmd>, ParseError> {
     if let Some(token) = tokenizer.next() {
         let cmd = match token {
-            Token::WORD(word) => match word.as_ref() {
+            Token::WORD(info, word) => match word.as_ref() {
                 KW_FORWARD => Cmd::Forward,
                 KW_BACK => Cmd::Back,
                 KW_FORWARD_WORD => Cmd::ForwardWord,
@@ -146,7 +145,7 @@ fn parse_cmd(tokenizer: &mut Tokenizer) -> Result<Option<Cmd>, ParseError> {
                 //     let text = expect_string(tokenizer).expect("Expected a string.");
                 //     cmds.push(Cmd::RFind{what: text});
                 // }
-                _ => return Err(ParseError::UnexpectedToken(Token::WORD(word))),
+                _ => return Err(ParseError::UnexpectedToken(Token::WORD(info, word))),
             },
             _ => return Err(ParseError::UnexpectedToken(token)),
         };
@@ -170,7 +169,7 @@ pub fn parse(tokenizer: &mut Tokenizer) -> Option<Vec<Cmd>> {
     if cmds.is_empty() {
         None
     } else {
-        println!("Cmds: {:?}",cmds);
+        println!("Cmds: {:?}", cmds);
         Some(cmds)
     }
 }
