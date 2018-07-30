@@ -233,14 +233,13 @@ mod tests {
         assert_eq!(Some(8), state.mark);
     }
 
-
     #[test]
     fn truncate_by_cmd() {
         let mut state = LineState::new("hello");
 
         truncate_by(&mut state, 1);
 
-        assert_eq!("hell",state.text());
+        assert_eq!("hell", state.text());
     }
 
 }

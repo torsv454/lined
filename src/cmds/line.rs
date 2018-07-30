@@ -14,7 +14,6 @@ pub fn downcase_line(state: &mut LineState) {
     state.characters = contents;
 }
 
-
 pub fn upcase_line(state: &mut LineState) {
     let contents: Vec<char> = state
         .characters
