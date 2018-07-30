@@ -39,7 +39,15 @@ const KW_KILL_WORD: &str = "kill_word";
 const KW_RKILL_WORD: &str = "rkill_word";
 const KW_KILL_FULL_WORD: &str = "kill_full_word";
 const KW_KILL_LINE: &str = "kill_line";
+const KW_COPY_LINE: &str = "copy_line";
 const KW_RKILL_LINE: &str = "rkill_line";
+const KW_TRUNCATE_BY: &str = "truncate_by";
+const KW_UPCASE_LINE: &str = "upcase_line";
+const KW_DOWNCASE_LINE: &str = "downcase_line";
+const KW_LTRIM_LINE: &str = "ltrim_line";
+const KW_RTRIM_LINE: &str = "rtrim_line";
+const KW_TRIM_LINE: &str = "trim_line";
+
 
 #[derive(Debug, PartialEq)]
 enum ParseError {
@@ -77,11 +85,17 @@ fn parse_cmd(tokenizer: &mut Tokenizer) -> Result<Option<Cmd>, ParseError> {
                 KW_TRANSPOSE_CHAR => Cmd::TransposeCharacter,
                 KW_UPCASE_CHAR => Cmd::UpcaseCharacter,
                 KW_DOWNCASE_CHAR => Cmd::DowncaseCharacter,
+                KW_UPCASE_LINE => Cmd::UpcaseLine,
+                KW_COPY_LINE => Cmd::CopyLine,
+                KW_TRIM_LINE => Cmd::TrimLine,
+                KW_LTRIM_LINE => Cmd::LTrimLine,
+                KW_RTRIM_LINE => Cmd::RTrimLine,
                 KW_UPCASE_CLIPBOARD => Cmd::UpcaseClipboard,
                 KW_TRIM_CLIPBOARD => Cmd::TrimClipboard,
                 KW_LTRIM_CLIPBOARD => Cmd::LeftTrimClipboard,
                 KW_RTRIM_CLIPBOARD => Cmd::RightTrimClipboard,
                 KW_DOWNCASE_CLIPBOARD => Cmd::DowncaseClipboard,
+                KW_DOWNCASE_LINE => Cmd::DowncaseLine,
                 KW_SENTENCE_CASE_CLIPBOARD => Cmd::SentencecaseClipboard,
                 KW_TRANSPOSE_WORD => Cmd::TransposeWord,
                 KW_UPCASE_WORD => Cmd::UpcaseWord,
@@ -105,6 +119,10 @@ fn parse_cmd(tokenizer: &mut Tokenizer) -> Result<Option<Cmd>, ParseError> {
                 KW_UPCASE => Cmd::UpcaseRegion,
                 KW_DOWNCASE => Cmd::DowncaseRegion,
                 KW_KILL => Cmd::Kill,
+                KW_TRUNCATE_BY => {
+                    let amount = expect_number(tokenizer)? as usize; // TODO: fix me
+                    Cmd::TruncateBy(amount)
+                }
                 KW_REPEAT => {
                     let times = expect_number(tokenizer)? as usize; // TODO: fix me
                     let cmd = parse_cmd(tokenizer)?;
@@ -152,6 +170,7 @@ pub fn parse(tokenizer: &mut Tokenizer) -> Option<Vec<Cmd>> {
     if cmds.is_empty() {
         None
     } else {
+        println!("Cmds: {:?}",cmds);
         Some(cmds)
     }
 }

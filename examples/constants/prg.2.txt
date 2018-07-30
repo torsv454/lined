@@ -1,0 +1,10 @@
+trim_line
+truncate_by 1
+copy_line
+upcase_line
+insert "const KW_" 
+end
+insert ": &str = \"" 
+downcase_clipboard
+paste
+insert "\";"

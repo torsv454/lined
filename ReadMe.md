@@ -15,7 +15,7 @@ $ cat sample.txt
   
 $ cat toconstants.txt  
 mark forward_word back_word cut  
-mark end delete cut  
+mark last delete cut  
 insert "const KW_"  
 mark paste upcase  
 insert ": &str = \""  

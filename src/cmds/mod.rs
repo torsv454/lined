@@ -3,6 +3,7 @@ pub mod clipboard;
 pub mod control;
 pub mod insert;
 pub mod kill;
+pub mod line;
 pub mod navigation;
 pub mod region;
 pub mod search;

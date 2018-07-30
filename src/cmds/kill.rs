@@ -1,5 +1,6 @@
 use super::super::LineState;
 use super::word;
+use std::cmp;
 
 pub fn kill_line_after(state: &mut LineState) {
     let len = state.characters.len();
@@ -7,6 +8,11 @@ pub fn kill_line_after(state: &mut LineState) {
     let delta = len - pos;
     state.characters.truncate(state.cursor);
     state.shift_mark_if_greater(pos, delta);
+}
+
+pub fn truncate_by(state: &mut LineState, amount: usize) {
+    let len = cmp::max(0, state.characters.len() - amount);
+    state.characters.truncate(len);
 }
 
 pub fn kill_line_before(state: &mut LineState) {
@@ -226,4 +232,15 @@ mod tests {
         assert_eq!(6, state.cursor);
         assert_eq!(Some(8), state.mark);
     }
+
+
+    #[test]
+    fn truncate_by_cmd() {
+        let mut state = LineState::new("hello");
+
+        truncate_by(&mut state, 1);
+
+        assert_eq!("hell",state.text());
+    }
+
 }

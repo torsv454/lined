@@ -28,7 +28,6 @@ pub fn upcase_sequence(state: &mut LineState, start: usize, end: usize) {
         .collect();
 
     state.characters.splice(start..end, contents);
-
 }
 
 pub fn downcase(state: &mut LineState) {

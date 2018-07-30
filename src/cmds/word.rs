@@ -1,6 +1,6 @@
 use super::super::LineState;
-use super::region;
 use super::character;
+use super::region;
 
 pub fn upcase_word(state: &mut LineState) {
     let start = current_word_start(state);
@@ -23,7 +23,6 @@ pub fn sentence_case_word(state: &mut LineState) {
     character::upcase_character(state);
     state.cursor = old;
 }
-
 
 enum WordNavigationState {
     BeforeWord,

@@ -3,6 +3,7 @@ use super::cmds::clipboard::*;
 use super::cmds::control::*;
 use super::cmds::insert::*;
 use super::cmds::kill::*;
+use super::cmds::line::*;
 use super::cmds::navigation::*;
 use super::cmds::region::*;
 use super::cmds::search::*;
@@ -112,6 +113,7 @@ pub enum Cmd {
     UpcaseCharacter,
     DowncaseCharacter,
     Translate { table: HashMap<char, char> },
+    CopyLine,
 
     // Word commands
     KillWord,
@@ -143,6 +145,12 @@ pub enum Cmd {
     Kill,
     KillLine,
     RKillLine,
+    TruncateBy(usize),
+    TrimLine,
+    LTrimLine,
+    RTrimLine,
+    UpcaseLine,
+    DowncaseLine,
 
     // Searching
     Find { what: char },
@@ -165,12 +173,14 @@ impl Cmd {
             Cmd::BackWord => back_word(state),
             Cmd::Home => home(state),
             Cmd::End => end(state),
-            Cmd::Goto(column) => goto(state,*column),
+            Cmd::Goto(column) => goto(state, *column),
             Cmd::Last => last(state),
             Cmd::Delete => delete(state),
             Cmd::DeleteBefore => delete_before(state),
             Cmd::Mark => mark(state),
             Cmd::Copy => copy(state),
+            Cmd::CopyLine => copy_line(state),
+            Cmd::TruncateBy(amount) => truncate_by(state, *amount),
             Cmd::UpcaseRegion => upcase(state),
             Cmd::DowncaseRegion => downcase(state),
             Cmd::UpcaseClipboard => upcase_clipboard(state),
@@ -179,6 +189,11 @@ impl Cmd {
             Cmd::LeftTrimClipboard => left_trim_clipboard(state),
             Cmd::RightTrimClipboard => right_trim_clipboard(state),
             Cmd::TrimClipboard => trim_clipboard(state),
+            Cmd::DowncaseLine => downcase_line(state),
+            Cmd::UpcaseLine => upcase_line(state),
+            Cmd::TrimLine => trim_line(state),
+            Cmd::LTrimLine => ltrim_line(state),
+            Cmd::RTrimLine => rtrim_line(state),
             Cmd::Cut => cut(state),
             Cmd::Paste => paste(state),
             Cmd::Repeat { times, cmd } => repeat(state, *times, cmd),
